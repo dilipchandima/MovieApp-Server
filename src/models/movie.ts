@@ -23,7 +23,7 @@ export interface SingleMovie {
   belongs_to_collection?: number;
   budget: number;
   genres: Genre[];
-  hame: string;
+  name: string;
   id: number;
   imdb_id: string;
   original_language: OriginalLanguage;
@@ -31,13 +31,13 @@ export interface SingleMovie {
   overview: string;
   popularity: number;
   poster_path: string;
-  production_companies: ProductionCompanies[];
+  production_companies: ProductionCompany[];
   release_date: string;
   title: string;
   video: boolean;
   vote_average: number;
   vote_count: number;
-  production_countries: ProductionCountries[];
+  production_countries: ProductionCountry[];
   revenue: number;
   runtime: number;
   spoken_languages: SpokenLanguages[];
@@ -45,14 +45,15 @@ export interface SingleMovie {
   tagline: string;
 }
 
-export interface ProductionCompanies {
+export interface ProductionCompany {
   id: number;
   logo_path: string;
   name: string;
   origin_country: string;
 }
 
-export interface ProductionCountries {
+export interface ProductionCountry {
+  id: number;
   iso_3166_1: string;
   name: string;
 }
@@ -63,4 +64,10 @@ export interface SpokenLanguages {
   name: string;
 }
 
+export interface Language {
+  id: number;
+  english_name: string;
+  iso_639_1: string;
+  name: string;
+}
 export type OriginalLanguage = "en" | "ja";
