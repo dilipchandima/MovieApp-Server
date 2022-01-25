@@ -13,5 +13,17 @@ export default class CountryService {
     });
   }
 
+  async createRelationTable() {
+    if (await knex.schema.hasTable("MovieCountry")) {
+      return;
+    }
+
+    await knex.schema.createTable("MovieCountry", (table) => {
+      table.integer("id").primary();
+      table.integer("movie_id").references("id").inTable("Movie");
+      table.integer("country_id").references("id").inTable("Country");
+    });
+  }
+
   constructor() {}
 }

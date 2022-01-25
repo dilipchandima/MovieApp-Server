@@ -14,5 +14,17 @@ export default class LanguageService {
     });
   }
 
+  async createRelationTable() {
+    if (await knex.schema.hasTable("MovieLanguage")) {
+      return;
+    }
+
+    await knex.schema.createTable("MovieLanguage", (table) => {
+      table.integer("id").primary();
+      table.integer("movie_id").references("id").inTable("Movie");
+      table.integer("language_id").references("id").inTable("Language");
+    });
+  }
+
   constructor() {}
 }
