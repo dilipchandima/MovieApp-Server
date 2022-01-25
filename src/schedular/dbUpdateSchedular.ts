@@ -29,10 +29,7 @@ const updateGenres = async () => {
 
     const result = await ConsumerApi({ url: "/genre/movie/list" });
     const data: { genres: Genre[] } = result.data;
-
-    data.genres.map(async (item) => {
-      await genreService.add(item);
-    });
+    console.log(data);
   } catch (error) {
     console.log(error);
   }

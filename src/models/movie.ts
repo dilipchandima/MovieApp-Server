@@ -5,7 +5,7 @@ export interface Movie {
   backdrop_path: string;
   genre_ids: number[];
   id: number;
-  original_language: OriginalLanguage;
+  original_language: string;
   original_title: string;
   overview: string;
   popularity: number;
@@ -26,7 +26,7 @@ export interface SingleMovie {
   name: string;
   id: number;
   imdb_id: string;
-  original_language: OriginalLanguage;
+  original_language: string;
   original_title: string;
   overview: string;
   popularity: number;
@@ -70,4 +70,3 @@ export interface Language {
   iso_639_1: string;
   name: string;
 }
-export type OriginalLanguage = "en" | "ja";

@@ -1,6 +1,4 @@
-import { ProductionCountry } from "../../models/movie";
 import { knex } from "../connection";
-import CountryDAO from "../dao/CountryDAO";
 
 export default class CountryService {
   async createTable() {
@@ -13,22 +11,6 @@ export default class CountryService {
       table.string("name");
       table.string("iso_3166_1");
     });
-  }
-
-  async add(object: ProductionCountry) {
-    if (await this.findById(object.id)) {
-      return await CountryDAO.query().findById(object.id).update(object);
-    }
-
-    return await CountryDAO.query().insertAndFetch(object);
-  }
-
-  async list() {
-    return await CountryDAO.query();
-  }
-
-  async findById(id = 0) {
-    return await CountryDAO.query().findById(id);
   }
 
   constructor() {}
