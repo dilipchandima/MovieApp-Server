@@ -12,5 +12,17 @@ export default class GenreService {
     });
   }
 
+  async createRelationTable() {
+    if (await knex.schema.hasTable("MovieGenre")) {
+      return;
+    }
+
+    await knex.schema.createTable("MovieGenre", (table) => {
+      table.increments("id").primary();
+      table.integer("movie_id").references("id").inTable("Movie");
+      table.integer("genre_id").references("id").inTable("Genre");
+    });
+  }
+
   constructor() {}
 }

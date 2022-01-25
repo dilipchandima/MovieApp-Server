@@ -14,5 +14,20 @@ export default class ProductionCompanyService {
     });
   }
 
+  async createRelationTable() {
+    if (await knex.schema.hasTable("MovieProductionCompany")) {
+      return;
+    }
+
+    await knex.schema.createTable("MovieProductionCompany", (table) => {
+      table.increments("id").primary();
+      table.integer("movie_id").references("id").inTable("Movie");
+      table
+        .integer("production_company_id")
+        .references("id")
+        .inTable("ProductionCompany");
+    });
+  }
+
   constructor() {}
 }
