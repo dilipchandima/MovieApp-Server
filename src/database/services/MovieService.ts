@@ -59,45 +59,54 @@ export default class MovieService {
       ...movieData
     } = movie;
 
-    await knex("Movie").insert(movieData);
+    const rows = await knex("Movie").select().where("id", movieData.id);
+    if (rows.length > 0) {
+      /**
+       * here we need to check all the tables and update
+       * for now I'm only updating the Movie table
+       */
+      await knex("Movie").where("id", movieData.id).update(movieData);
+    } else {
+      await knex("Movie").insert(movieData);
 
-    const movieGenreData = genres.map((data: Genre) => ({
-      movie_id: movieData.id,
-      genre_id: data.id,
-    }));
+      const movieGenreData = genres.map((data: Genre) => ({
+        movie_id: movieData.id,
+        genre_id: data.id,
+      }));
 
-    await knex.batchInsert("MovieGenre", movieGenreData);
+      await knex.batchInsert("MovieGenre", movieGenreData);
 
-    const movieCountryData = production_countries.map((data) => ({
-      movie_id: movieData.id,
-      country_id: data?.iso_3166_1,
-    }));
+      const movieCountryData = production_countries.map((data) => ({
+        movie_id: movieData.id,
+        country_id: data?.iso_3166_1,
+      }));
 
-    await knex.batchInsert("MovieCountry", movieCountryData);
+      await knex.batchInsert("MovieCountry", movieCountryData);
 
-    const movieLanguageData = spoken_languages.map((data) => ({
-      movie_id: movieData.id,
-      language_id: data?.iso_639_1,
-    }));
-    await knex.batchInsert("MovieLanguage", movieLanguageData);
+      const movieLanguageData = spoken_languages.map((data) => ({
+        movie_id: movieData.id,
+        language_id: data?.iso_639_1,
+      }));
+      await knex.batchInsert("MovieLanguage", movieLanguageData);
 
-    for (let i = 0; i < production_companies?.length; i++) {
-      const company = production_companies[i];
-      knex("ProductionCompany")
-        .select()
-        .where("id", company.id)
-        .then(async (rows) => {
-          if (rows.length === 0) {
-            return await knex("ProductionCompany").insert(company);
-          }
-        });
+      for (let i = 0; i < production_companies?.length; i++) {
+        const company = production_companies[i];
+        knex("ProductionCompany")
+          .select()
+          .where("id", company.id)
+          .then(async (rows) => {
+            if (rows.length === 0) {
+              return await knex("ProductionCompany").insert(company);
+            }
+          });
+      }
+
+      const movieProdComData = production_companies.map((data) => ({
+        movie_id: movieData.id,
+        production_company_id: data?.id,
+      }));
+      await knex.batchInsert("MovieProductionCompany", movieProdComData);
     }
-
-    const movieProdComData = production_companies.map((data) => ({
-      movie_id: movieData.id,
-      production_company_id: data?.id,
-    }));
-    await knex.batchInsert("MovieProductionCompany", movieProdComData);
   }
 
   async getById(id: number) {
