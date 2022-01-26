@@ -5,7 +5,7 @@ import morgan from "morgan";
 require("./database/connection");
 
 import routes from "./routes";
-import { startSchedular, updateGenres } from "./schedular/dbUpdateSchedular";
+import { startSchedular } from "./schedular/dbUpdateSchedular";
 
 const router: Express = express();
 
@@ -22,9 +22,7 @@ router.use((req, res, next) => {
   });
 });
 
-// startSchedular();
-
-updateGenres();
+startSchedular();
 
 const httpServer = http.createServer(router);
 const PORT: any = process.env.PORT ?? 5000;

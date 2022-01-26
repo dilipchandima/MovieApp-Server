@@ -1,3 +1,4 @@
+import ConsumerApi from "../../libraries/consumerApi";
 import { Genre } from "../../models/genre";
 import { SingleMovie } from "../../models/movie";
 import { knex } from "../connection";
@@ -12,7 +13,6 @@ export default class MovieService {
       table.integer("id").primary();
       table.boolean("adult");
       table.string("backdrop_path");
-      table.integer("belongs_to_collection");
       table.bigInteger("budget");
       table.string("homepage");
       table.string("imdb_id");
@@ -55,6 +55,7 @@ export default class MovieService {
       production_companies,
       production_countries,
       spoken_languages,
+      belongs_to_collection,
       ...movieData
     } = movie;
 
@@ -82,7 +83,7 @@ export default class MovieService {
 
     for (let i = 0; i < production_companies?.length; i++) {
       const company = production_companies[i];
-      await knex("ProductionCompany")
+      knex("ProductionCompany")
         .select()
         .where("id", company.id)
         .then(async (rows) => {
@@ -100,40 +101,32 @@ export default class MovieService {
   }
 
   async getById(id: number) {
-    return await knex("Movie").select().where("id", id);
+    const data = await knex("Movie").select().where("id", id);
+
+    if (data.length > 0) {
+      const genres = await knex("Genre")
+        .leftJoin("MovieGenre", "Genre.id", "MovieGenre.genre_id")
+        .select("Genre.*")
+        .where("MovieGenre.movie_id", id);
+
+      const spoken_languages = await knex("Language")
+        .leftJoin(
+          "MovieLanguage",
+          "Language.iso_639_1",
+          "MovieLanguage.language_id"
+        )
+        .select("Language.*")
+        .where("MovieLanguage.movie_id", id);
+
+      const result = { ...data[0], spoken_languages, genres };
+
+      return result;
+    } else {
+      const response = await ConsumerApi({ url: `/movie/${id}` });
+      this.add(response.data);
+      return response.data;
+    }
   }
 
   constructor() {}
 }
-
-// {
-//   adult: false,
-//   backdrop_path: '/k2twTjSddgLc1oFFHVibfxp2kQV.jpg',
-//   genre_ids: [ 28, 12, 14, 878 ],
-//   id: 524434,
-//   original_language: 'en', ======> should be FK
-//   original_title: 'Eternals',
-//   overview: 'The Eternals are a team of ancient aliens who have been living on Earth in secret for thousands of years. When an unexpected tragedy forces them out of the shadows, they are forced to reunite against mankind’s most ancient enemy, the Deviants.',
-//   popularity: 7590.729,
-//   poster_path: '/6AdXwFTRTAzggD2QUTt5B7JFGKL.jpg',
-//   release_date: '2021-11-03',
-//   title: 'Eternals',
-//   video: false,
-//   vote_average: 7.3,
-//   vote_count: 3513
-// }
-
-// {
-//   belongs_to_collection: null,
-//   budget: 200000000,
-//   genres: [ [Object], [Object], [Object], [Object] ], ===================
-//   homepage: 'https://www.marvel.com/movies/the-eternals',
-//   imdb_id: 'tt9032400',
-//   production_companies: [ [Object] ],
-//   production_countries: [ [Object] ],
-//   revenue: 401972153,
-//   runtime: 156,
-//   spoken_languages: [ [Object], [Object], [Object], [Object], [Object] ],
-//   status: 'Released',
-//   tagline: 'In the beginning...',
-// }

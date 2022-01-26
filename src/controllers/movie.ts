@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
+import MovieService from "../database/services/MovieService";
 import ConsumerApi from "../libraries/consumerApi";
-import { Movie, SingleMovie } from "../models/movie";
+import { Movie } from "../models/movie";
 
 const getPopularMovies = async (
   req: Request,
@@ -44,8 +45,9 @@ const getLatestMovies = async (
 const getMovie = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const movieId = req.params.movieId;
-    const result = await ConsumerApi({ url: `/movie/${movieId}` });
-    const data: SingleMovie = result.data;
+
+    const movieService = new MovieService();
+    const data = await movieService.getById(Number(movieId));
 
     return res.status(200).json({
       data,

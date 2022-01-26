@@ -5,12 +5,11 @@ import LanguageService from "../database/services/LanguageService";
 import MovieService from "../database/services/MovieService";
 import ProductionCompanyService from "../database/services/ProductionCompanyService";
 import ConsumerApi from "../libraries/consumerApi";
-import { Genre } from "../models/genre";
 import { Language } from "../models/movie";
 
 export const startSchedular = () => {
-  console.log("Starting scheduar");
-  scheduleJob("*/5 * * * * *", async () => {
+  console.log("Starting Schedular");
+  scheduleJob("* * 0 * * *", async () => {
     console.log("============= Schedular STARTED =========");
     await updateGenres();
     console.log("============= Schedular END =========");
@@ -33,7 +32,6 @@ export const updateGenres = async () => {
     await productionCompanyService.createTable();
     await movieService.createTable();
 
-    //crete MnM tables
     await genreService.createRelationTable();
     await countryService.createRelationTable();
     await languageService.createRelationTable();
@@ -41,10 +39,6 @@ export const updateGenres = async () => {
 
     const languages = await ConsumerApi({ url: "/configuration/languages" });
     const countries = await ConsumerApi({ url: "/configuration/countries" });
-    /**
-     * this /search/company API is not working
-     */
-    // const companies = await ConsumerApi({ url: "/search/company" });
     const genres = await ConsumerApi({ url: "/genre/movie/list" });
     const data: Language[] = languages.data;
 
@@ -52,18 +46,18 @@ export const updateGenres = async () => {
     countryService.insertMany(countries.data);
     genreService.insertMany(genres.data.genres);
 
-    const {
-      data: { page, results, total_pages },
-    } = await ConsumerApi({ url: "/movie/popular", page: 1 });
-    // console.log(results);
+    for (let x = 1; x < 10; x++) {
+      const {
+        data: { results },
+      } = await ConsumerApi({ url: "/movie/popular", page: x });
 
-    const movieId = 524434;
-    const test = await ConsumerApi({ url: `/movie/${movieId}` });
-    console.log(test);
-    await movieService.add(test.data);
-
-    const response = await movieService.getById(movieId);
-    console.log(response);
+      for (let i = 0; i < results.length; i++) {
+        const selectedMovie = results[i];
+        const movieId = selectedMovie.id;
+        const test = await ConsumerApi({ url: `/movie/${movieId}` });
+        await movieService.add(test.data);
+      }
+    }
   } catch (error) {
     console.log(error);
   }
