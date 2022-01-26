@@ -1,3 +1,4 @@
+import { ProductionCountry } from "../../models/movie";
 import { knex } from "../connection";
 
 export default class CountryService {
@@ -7,9 +8,9 @@ export default class CountryService {
     }
 
     await knex.schema.createTable("Country", (table) => {
-      table.integer("id").primary();
-      table.string("name");
-      table.string("iso_3166_1");
+      table.string("iso_3166_1").primary();
+      table.string("english_name");
+      table.string("native_name");
     });
   }
 
@@ -21,8 +22,12 @@ export default class CountryService {
     await knex.schema.createTable("MovieCountry", (table) => {
       table.increments("id").primary();
       table.integer("movie_id").references("id").inTable("Movie");
-      table.integer("country_id").references("id").inTable("Country");
+      table.string("country_id").references("iso_3166_1").inTable("Country");
     });
+  }
+
+  async insertMany(data: ProductionCountry[]) {
+    await knex.batchInsert("Country", data);
   }
 
   constructor() {}

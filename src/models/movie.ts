@@ -43,6 +43,7 @@ export interface SingleMovie {
   spoken_languages: SpokenLanguages[];
   status: string;
   tagline: string;
+  homepage: string;
 }
 
 export interface ProductionCompany {

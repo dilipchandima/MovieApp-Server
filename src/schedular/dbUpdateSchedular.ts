@@ -9,7 +9,7 @@ import { Genre } from "../models/genre";
 import { Language } from "../models/movie";
 
 export const startSchedular = () => {
-  console.log("Starting schedular");
+  console.log("Starting scheduar");
   scheduleJob("*/5 * * * * *", async () => {
     console.log("============= Schedular STARTED =========");
     await updateGenres();
@@ -41,12 +41,29 @@ export const updateGenres = async () => {
 
     const languages = await ConsumerApi({ url: "/configuration/languages" });
     const countries = await ConsumerApi({ url: "/configuration/countries" });
+    /**
+     * this /search/company API is not working
+     */
     // const companies = await ConsumerApi({ url: "/search/company" });
     const genres = await ConsumerApi({ url: "/genre/movie/list" });
     const data: Language[] = languages.data;
 
-    // languageService.insertMany(data);
-    console.log(languages.data, countries.data, genres.data);
+    languageService.insertMany(data);
+    countryService.insertMany(countries.data);
+    genreService.insertMany(genres.data.genres);
+
+    const {
+      data: { page, results, total_pages },
+    } = await ConsumerApi({ url: "/movie/popular", page: 1 });
+    // console.log(results);
+
+    const movieId = 524434;
+    const test = await ConsumerApi({ url: `/movie/${movieId}` });
+    console.log(test);
+    await movieService.add(test.data);
+
+    const response = await movieService.getById(movieId);
+    console.log(response);
   } catch (error) {
     console.log(error);
   }

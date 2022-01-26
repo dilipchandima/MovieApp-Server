@@ -1,3 +1,4 @@
+import { ProductionCompany } from "../../models/movie";
 import { knex } from "../connection";
 
 export default class ProductionCompanyService {
@@ -27,6 +28,10 @@ export default class ProductionCompanyService {
         .references("id")
         .inTable("ProductionCompany");
     });
+  }
+
+  async insertMany(data: ProductionCompany[]) {
+    await knex.batchInsert("ProductionCompany", data);
   }
 
   constructor() {}

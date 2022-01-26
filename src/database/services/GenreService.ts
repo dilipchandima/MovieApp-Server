@@ -1,3 +1,4 @@
+import { Genre } from "../../models/genre";
 import { knex } from "../connection";
 
 export default class GenreService {
@@ -22,6 +23,10 @@ export default class GenreService {
       table.integer("movie_id").references("id").inTable("Movie");
       table.integer("genre_id").references("id").inTable("Genre");
     });
+  }
+
+  async insertMany(data: Genre[]) {
+    await knex.batchInsert("Genre", data);
   }
 
   constructor() {}

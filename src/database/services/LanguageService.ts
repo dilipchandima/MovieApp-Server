@@ -26,8 +26,8 @@ export default class LanguageService {
     });
   }
 
-  async insertMany(languages: Language[]) {
-    await knex.batchInsert("Language", languages);
+  async insertMany(data: Language[]) {
+    await knex.batchInsert("Language", data);
   }
 
   constructor() {}
