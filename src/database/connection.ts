@@ -1,4 +1,3 @@
-import { Model } from "objection";
 import Knex from "knex";
 
 const knex = Knex({
@@ -11,7 +10,5 @@ const knex = Knex({
     database: "movie_db",
   },
 });
-
-Model.knex(knex);
 
 export { knex };

@@ -19,10 +19,16 @@ git clone https://github.com/dilipchandima/MovieApp-Server.git
 
 - From inside the project
 
-Run following command for install the dependecies
+Run following command for install the dependencies
 
 ```
 yarn
+```
+
+Change Database connection
+
+```
+Please update the following file src -> database -> connection.ts
 ```
 
 Run following command for start the server
