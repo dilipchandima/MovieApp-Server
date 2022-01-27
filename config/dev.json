@@ -1,0 +1,6 @@
+{
+  "TMDB": {
+    "api-key": "2177b177880f14d442a3253a0cdef201",
+    "base-url": "https://api.themoviedb.org/3"
+  }
+}
